@@ -43,7 +43,6 @@ class InstaBot:
 
         self.logged_in = False
 
-
     @insta_method
     def login(self):
         """
@@ -52,7 +51,9 @@ class InstaBot:
 
         self.driver.get(self.login_url)
         time.sleep(2)
-        login_btn = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[3]') # login button xpath changes after text is entered, find first
+        # login button xpath changes after text is entered, find first
+        login_btn = self.driver.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[3]')
         username_input = self.driver.find_element_by_name('username')
         password_input = self.driver.find_element_by_name('password')
 
@@ -60,56 +61,66 @@ class InstaBot:
         password_input.send_keys(self.password)
         time.sleep(2)
         password_input.send_keys(Keys.RETURN)
-        #login_btn.click()
-
-
 
     @insta_method
-    def like_search(self, n_posts, like=True):
-       
+    def like_my_feed(self, n_posts, like=True):
+
         action = 'Like' if like else 'Unlike'
 
-        #close modal here
-        #time.sleep(3)
+        # close modal here
+        time.sleep(3)
         #self.driver.find_element_by_xpath("//*[text()='Turn On']").click()
+        try:
+            print("checking for new posts")
+            newposts = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//*[text()='New Posts']")))
+            newposts.click()
+            time.sleep(2)
+        except:
+            pass
 
-        search = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH,"//*[@aria-label='Find People']")))
-        search.click()
-        time.sleep(5)
-      
-        liked=0
+        liked = 0
         while True:
-            time.sleep(10)
-            image = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH,"//*[@id='react-root']/section/main/div/div[2]/div/div[1]/div[2]/div/a/div/div[2]")))
-            image.click()
-            j = 12
-            while j > 0:
-               try:
-                   like = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[@aria-label='{}']".format(action))))
-                   like.click()
-                   print("liked")
-                   time.sleep(2)
-                   liked = liked + 1
-                   nextbutton = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Next']")))
-                   nextbutton.click()
-                   time.sleep(2)
-               except:
-                   print("Not liked")
-                   nextbutton = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Next']")))
-                   nextbutton.click()   
-               j = j - 1
-            self.driver.find_element_by_xpath("//*[@aria-label='Close']").click()  
-            print("Total liked",liked)
-            time.sleep(10)
+            try:
+                newposts = WebDriverWait(self.driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//*[text()='New Posts']")))
+                newposts.click()
+            except:
+                pass
+            time.sleep(2)
+            j = 1
+            while j < 6:
+                time.sleep(2)
+                try:
+
+                    btn = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, 'article._8Rm4L:nth-child({}) > div:nth-child(3) > section:nth-child(1) > span:nth-child(1) > button:nth-child(1) > svg:nth-child(1)'.format(j))))
+                    aria_label = btn.get_attribute("aria-label")
+
+                    if aria_label == 'Like':
+                        like = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+                            (By.CSS_SELECTOR, "article._8Rm4L:nth-child({}) > div:nth-child(3) > section:nth-child(1) > span:nth-child(1) > button:nth-child(1)".format(j))))
+                        like.click()
+                        print("Liked")
+
+                    else:
+                        print("already liked")
+
+                except:
+                    print("Error occured")
+
+                liked = liked + 1
+                time.sleep(2)
+                j = j + 1
+
+            print("liked", liked)
+            time.sleep(150)
             self.driver.refresh()
-
-
-
 
 
 if __name__ == '__main__':
 
-    config_file_path = './config.ini' 
+    config_file_path = './config.ini'
     logger_file_path = './bot.log'
     config = init_config(config_file_path)
     logger = get_logger(logger_file_path)
@@ -117,4 +128,4 @@ if __name__ == '__main__':
     bot = InstaBot()
     bot.login()
 
-    bot.like_search( 100, like=True)
+    bot.like_my_feed(100, like=True)
