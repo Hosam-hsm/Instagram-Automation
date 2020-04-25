@@ -74,9 +74,9 @@ class InstaBot:
         search1.click()
         time.sleep(3)
         search2 = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/section/nav/div[2]/div/div/div[2]/input")))
-        search2.send_keys("likeforlike")
+        search2.send_keys("HASHTAG")
         time.sleep(3)
-        hashtag = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='#likeforlike']")))
+        hashtag = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='#HASHTAG']")))
         time.sleep(3)
         hashtag.click()
 
