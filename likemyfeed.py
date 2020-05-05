@@ -64,36 +64,38 @@ class InstaBot:
 
     @insta_method
     def like_my_feed(self, n_posts, like=True):
-
         action = 'Like' if like else 'Unlike'
-
         # close modal here
         time.sleep(3)
         #self.driver.find_element_by_xpath("//*[text()='Turn On']").click()
-        try:
-            print("checking for new posts")
-            newposts = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//*[text()='New Posts']")))
-            newposts.click()
-            time.sleep(2)
-        except:
-            pass
-
+        # try:
+        #     print("checking for new posts")
+        #     newposts = WebDriverWait(self.driver, 10).until(
+        #         EC.element_to_be_clickable((By.XPATH, "//*[text()='New Posts']")))
+        #     newposts.click()
+        #     time.sleep(2)
+        # except:
+        #     pass
         liked = 0
+        refresh = 0
         while True:
             try:
-                newposts = WebDriverWait(self.driver, 10).until(
+                newposts = WebDriverWait(self.driver, 3).until(
                     EC.element_to_be_clickable((By.XPATH, "//*[text()='New Posts']")))
-                newposts.click()
+                self.driver.execute_script("window.scrollTo(0, 30);")
+                self.driver.execute_script("window.scrollTo(0, -40);")
+                print("clicked new posts")
             except:
-                pass
-            time.sleep(2)
+                print("no new posts")
+            #To scroll to top
+            # search = self.driver.find_element_by_xpath("/html/body/div[1]/section/nav/div[2]/div/div/div[2]")
+            # self.driver.execute_script("return arguments[0].scrollIntoView(true);", search)
+            # print("scrolled to top")
             j = 1
             while j < 6:
                 time.sleep(2)
                 try:
-
-                    btn = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
+                    btn = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(
                         (By.CSS_SELECTOR, 'article._8Rm4L:nth-child({}) > div:nth-child(3) > section:nth-child(1) > span:nth-child(1) > button:nth-child(1) > svg:nth-child(1)'.format(j))))
                     aria_label = btn.get_attribute("aria-label")
 
@@ -102,20 +104,18 @@ class InstaBot:
                             (By.CSS_SELECTOR, "article._8Rm4L:nth-child({}) > div:nth-child(3) > section:nth-child(1) > span:nth-child(1) > button:nth-child(1)".format(j))))
                         like.click()
                         print("Liked")
-
+                        liked = liked + 1
                     else:
                         print("already liked")
-
                 except:
                     print("Error occured")
-
-                liked = liked + 1
-                time.sleep(2)
                 j = j + 1
-
             print("liked", liked)
-            time.sleep(150)
+            time.sleep(80)
             self.driver.refresh()
+            refresh = refresh + 1
+            print("refreshed", refresh, "times")
+            
 
 
 if __name__ == '__main__':
@@ -127,5 +127,7 @@ if __name__ == '__main__':
 
     bot = InstaBot()
     bot.login()
+   
+    
 
     bot.like_my_feed(100, like=True)

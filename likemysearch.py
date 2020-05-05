@@ -78,6 +78,7 @@ class InstaBot:
         time.sleep(5)
       
         liked=0
+        refresh = 0
         while True:
             time.sleep(10)
             image = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH,"//*[@id='react-root']/section/main/div/div[2]/div/div[1]/div[2]/div/a/div/div[2]")))
@@ -88,11 +89,11 @@ class InstaBot:
                    like = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[@aria-label='{}']".format(action))))
                    like.click()
                    print("liked")
-                   time.sleep(2)
+                   time.sleep(3)
                    liked = liked + 1
                    nextbutton = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Next']")))
                    nextbutton.click()
-                   time.sleep(2)
+                   time.sleep(3)
                except:
                    print("Not liked")
                    nextbutton = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//*[text()='Next']")))
@@ -102,6 +103,8 @@ class InstaBot:
             print("Total liked",liked)
             time.sleep(10)
             self.driver.refresh()
+            refresh = refresh + 1
+            print("refreshed", refresh, "times")
 
 
 
