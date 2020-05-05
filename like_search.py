@@ -58,7 +58,7 @@ class InstaBot:
 
         username_input.send_keys(self.username)
         password_input.send_keys(self.password)
-        time.sleep(2)
+        time.sleep(3)
         password_input.send_keys(Keys.RETURN)
         #login_btn.click()
 
